@@ -1,0 +1,53 @@
+#usci_injection_base .inside {
+    margin: 0;
+    padding: 0;
+}
+
+.usci-tab-container {
+    background: #fff;
+}
+
+.usci-tabs {
+    list-style: none;
+    margin: 0;
+    padding: 10px 0 0 10px;
+    display: flex;
+    background: #f1f1f1;
+    border-bottom: 1px solid #ccd0d4;
+}
+
+.usci-tabs li {
+    cursor: pointer;
+    padding: 10px 20px;
+    margin: 0;
+    border-left: 0;
+    background: #f1f1f1;
+    color: #555;
+    font-weight: 600;
+}
+
+.usci-tabs li.active {
+    border: 1px solid #ccd0d4;
+    border-bottom: 0;
+    box-shadow: 0px 1px 0px #fff;
+    background: #fff;
+}
+
+.usci-tab-content {
+    display: none;
+    padding: 15px;
+}
+
+.usci-tab-content.active {
+    display: block;
+}
+
+
+#usci_injection_base .form-table th,
+#usci_injection_base .form-table td {
+    padding: 10px 0;
+}
+
+#usci_injection_base span.description {
+    font-style: italic;
+}
