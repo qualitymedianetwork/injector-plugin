@@ -94,12 +94,9 @@ function usci_maybe_inject_the_content( string $content ): string {
 				$content .= $inject_content;
 				break;
 			case 'specific_tag':
-				$tag_rules = get_post_meta( $injection->ID, 'injection_tag', true );
-				$content   = usci_inject_after_tag_ruleset( $content, $inject_content, $tag_rules );
-				break;
 			case 'before_specific_tag':
 				$tag_rules = get_post_meta( $injection->ID, 'injection_tag', true );
-				$content   = usci_inject_after_tag_ruleset( $content, $inject_content, $tag_rules );
+				$content   = usci_inject_tag_ruleset( $content, $inject_content, $tag_rules, $content_position );
 				break;
 		}
 
@@ -119,13 +116,14 @@ function usci_maybe_inject_the_content( string $content ): string {
 /**
  * Tries to inject content after the first matching rule in the ruleset.
  *
- * @param string $html      The original HTML content.
- * @param string $injection The content to inject.
- * @param string $ruleset   Comma-separated tag rules (e.g., 'h2:nth-of-type(2), h3:nth-of-type(3), h3').
+ * @param string $html              The original HTML content.
+ * @param string $injection         The content to inject.
+ * @param string $ruleset           Comma-separated tag rules.
+ * @param string $content_position  Determines if the content is injected before or after the tag.
  *
  * @return string Modified HTML with injection or original if no match.
  */
-function usci_inject_after_tag_ruleset( string $html, string $injection, string $ruleset ): string {
+function usci_inject_tag_ruleset( string $html, string $injection, string $ruleset, string $content_position ): string {
 	if ( empty( $ruleset ) ) {
 		return $html;
 	}
@@ -133,25 +131,26 @@ function usci_inject_after_tag_ruleset( string $html, string $injection, string 
 	$rules = array_map( 'trim', explode( ',', $ruleset ) );
 
 	foreach ( $rules as $rule ) {
-		$updated = usci_try_inject_after_css_selector( $html, $injection, $rule );
+		$updated = usci_try_inject_after_css_selector( $html, $injection, $rule, $content_position );
 		if ( $updated !== $html ) {
 			return $updated;
 		}
 	}
 
-	return $html; // nothing matched
+	return $html;
 }
 
 /**
- * Injects after the specified tag rule (e.g., h2:nth-of-type(2)).
+ * Injects content before or after the specified tag rule.
  *
  * @param string $html
  * @param string $injection
- * @param string $rule
+ * @param string $rule             E.g., h2:nth-of-type(2)
+ * @param string $position_mode    'specific_tag' or 'before_specific_tag'
  *
  * @return string
  */
-function usci_try_inject_after_css_selector( string $html, string $injection, string $rule ): string {
+function usci_try_inject_after_css_selector( string $html, string $injection, string $rule, string $position_mode ): string {
 	if ( ! preg_match( '#^([a-z0-9]+)(?::nth-of-type\((\d+)\))?$#i', $rule, $matches ) ) {
 		return $html;
 	}
@@ -168,8 +167,14 @@ function usci_try_inject_after_css_selector( string $html, string $injection, st
 
 	$count = 0;
 
-	return preg_replace_callback( $pattern, function ( $match ) use ( $injection, $position, &$count ) {
+	return preg_replace_callback( $pattern, function ( $match ) use ( $injection, $position, $position_mode, &$count ) {
 		$count++;
-		return $match[0] . ( $count === $position ? $injection : '' );
+		if ( $count === $position ) {
+			if ( $position_mode === 'before_specific_tag' ) {
+				return $injection . $match[0];
+			}
+			return $match[0] . $injection;
+		}
+		return $match[0];
 	}, $html );
 }
