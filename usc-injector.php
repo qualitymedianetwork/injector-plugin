@@ -9,7 +9,7 @@
  *
  * Plugin Name:  USC Injector
  * Description:  Injects content on a specific position
- * Version:      0.0.1
+ * Version:      0.0.2
  * Author:       Upsidecode GmbH
  * Text Domain:  usc-injector
  * License:      GPL v3 or later

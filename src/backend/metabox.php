@@ -103,6 +103,7 @@ function usci_render_metabox_content( WP_Post $post ): void {
                             <option value="before_content" <?php selected( $injection_content_position ?? '', 'before_content' ); ?>><?php esc_html_e( 'Before post content', 'usc-injector' ); ?></option>
                             <option value="after_content" <?php selected( $injection_content_position ?? '', 'after_conten' ); ?>><?php esc_html_e( 'After post content', 'usc-injector' ); ?></option>
                             <option value="specific_tag" <?php selected( $injection_content_position ?? '', 'specific_tag' ); ?>><?php esc_html_e( 'After specific tag', 'usc-injector' ); ?></option>
+                            <option value="before_specific_tag" <?php selected( $injection_content_position ?? '', 'before_specific_tag' ); ?>><?php esc_html_e( 'Before specific tag', 'usc-injector' ); ?></option>
                         </select>
                         <p><span class="description"><?php esc_html_e( 'Select where the injection should appear.', 'usc-injector' ); ?></span></p>
                     </td>

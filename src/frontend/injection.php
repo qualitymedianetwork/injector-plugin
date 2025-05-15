@@ -90,14 +90,16 @@ function usci_maybe_inject_the_content( string $content ): string {
 			case 'before_content':
 				$content = $inject_content . $content;
 				break;
-
 			case 'after_content':
 				$content .= $inject_content;
 				break;
-
 			case 'specific_tag':
 				$tag_rules = get_post_meta( $injection->ID, 'injection_tag', true );
-                $content   = usci_inject_after_tag_ruleset( $content, $inject_content, $tag_rules );
+				$content   = usci_inject_after_tag_ruleset( $content, $inject_content, $tag_rules );
+				break;
+			case 'before_specific_tag':
+				$tag_rules = get_post_meta( $injection->ID, 'injection_tag', true );
+				$content   = usci_inject_after_tag_ruleset( $content, $inject_content, $tag_rules );
 				break;
 		}
 
