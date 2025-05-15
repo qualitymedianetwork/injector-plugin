@@ -105,6 +105,7 @@ function usci_maybe_inject_the_content( string $content ): string {
         $formatting = get_post_meta( $injection->ID, 'injection_formatting', true );
         if ( $formatting === 'on' ) {
             remove_filter( 'the_content', 'usci_maybe_inject_the_content' );
+			$content = wpautop( $content );
             $content = apply_filters( 'the_content', $content );
             add_filter( 'the_content', 'usci_maybe_inject_the_content' );
         }
