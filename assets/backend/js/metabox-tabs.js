@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Tabs
     const tabs = document.querySelectorAll('.usci-tabs li');
+    if (!tabs) return;
     const contents = document.querySelectorAll('.usci-tab-content');
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Rules
     const positionSelect = document.querySelector('select[name="injection_position"]');
+    if (!positionSelect) return;
     const contentPositionSelect = document.querySelector('select[name="injection_content_position"]');
     const rowContentPosition = document.getElementById('row-injection-content-position');
     const rowTag = document.getElementById('row-injection-tag');

@@ -23,7 +23,7 @@ function usci_register_backend_scripts(): void {
         'usci-backend-metabox-tabs-script',
         USCI_PLUGIN_BASEURL . '/assets/backend/js/metabox-tabs.js',
         [],
-        '1.0',
+        '0.0.2',
         true
     );
     wp_enqueue_script( 'usci-backend-metabox-tabs-script' );
@@ -42,7 +42,7 @@ function usci_register_backend_styles(): void {
         'usci-backend-metabox-tabs-style',
         USCI_PLUGIN_BASEURL . '/assets/backend/css/metabox-tabs.css',
         [],
-        '1.0'
+        '0.0.2'
     );
     wp_enqueue_style( 'usci-backend-metabox-tabs-style' );
 }
