@@ -7,10 +7,11 @@
  * @copyright    2025 Upsidecode GmbH
  * @license      GPL v3 or later
  *
- * Plugin Name:  USC Injector
- * Description:  Injects content on a specific position
- * Version:      0.0.2
- * Author:       Upsidecode GmbH
+ * Plugin Name:  Quality Media Network - Injector
+ * Description:  Ermöglicht das Einfügen individueller Elemente an beliebigen Positionen im Seitenlayout.
+ * Version:      0.0.3
+ * Author:       Quality Media Network GmbH
+ * Author URI:   https://www.qualitymedianetwork.de
  * Text Domain:  usc-injector
  * License:      GPL v3 or later
  */

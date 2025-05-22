@@ -24,7 +24,7 @@ function usci_register_cpt_injection(): void {
 		'menu_position' => null,
 		'menu_icon'     => 'dashicons-edit-page',
 		'labels'        => [
-            'name'               => __( 'Injections', 'usc-injector' ),
+            'name'               => __( 'QMN Injector', 'usc-injector' ),
             'singular_name'      => __( 'Injection', 'usc-injector' ),
             'add_new'            => __( 'Add Injection', 'usc-injector' ),
             'add_new_item'       => __( 'Add Injection', 'usc-injector' ),
