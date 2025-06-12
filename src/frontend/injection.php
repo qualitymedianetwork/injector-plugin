@@ -51,130 +51,208 @@ function usci_maybe_inject_head_footer_content(): void {
 }
 
 /**
- * Filters post content for content injections.
+ * Filters post content to inject custom content defined via USC Injection posts.
+ * Applies rules based on post type, position, tag selectors, and exclusion containers.
  *
- * @wp-hook the_content
- *
- * @param  string $content
- * @return string
+ * @wp-hook	the_content
+ * 
+ * @param	string $content The original post content.
+ * @return	string Modified content with injection if applicable.
  */
 function usci_maybe_inject_the_content( string $content ): string {
-	global $post;
+    global $post;
 
-	if ( ! is_singular() || ! is_main_query() ) {
-		return $content;
-	}
+    if ( ! is_singular() || ! is_main_query() ) {
+        return $content;
+    }
 
-	$injections = get_posts( [
-		'post_type'      => 'usc_injection',
-		'post_status'    => 'publish',
-		'posts_per_page' => -1,
-		'meta_query'     => [
-			[
-				'key'   => 'injection_position',
-				'value' => 'the_content',
-			],
-		],
-	] );
+    $injections = get_posts( [
+        'post_type'      => 'usc_injection',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'meta_query'     => [
+            [ 'key' => 'injection_position', 'value' => 'the_content' ],
+        ],
+    ] );
 
-	foreach ( $injections as $injection ) {
-		$target_type = get_post_meta( $injection->ID, 'injection_post_type', true );
-		if ( $target_type !== '-1' && $post->post_type !== $target_type ) {
-			continue;
-		}
+    foreach ( $injections as $injection ) {
+        $target_type = get_post_meta( $injection->ID, 'injection_post_type', true );
+        if ( $target_type !== '-1' && $post->post_type !== $target_type ) {
+            continue;
+        }
 
-		$inject_content   = get_post_meta( $injection->ID, 'injection_content', true );
-		$content_position = get_post_meta( $injection->ID, 'injection_content_position', true );
+        $inject_content   = get_post_meta( $injection->ID, 'injection_content', true );
+        $formatting       = get_post_meta( $injection->ID, 'injection_formatting', true );
+        $content_position = get_post_meta( $injection->ID, 'injection_content_position', true );
+        $tag_rules        = get_post_meta( $injection->ID, 'injection_tag', true );
+        $exclude_rules    = get_post_meta( $injection->ID, 'injection_exclude', true );
 
-		switch ( $content_position ) {
-			case 'before_content':
-				$content = $inject_content . $content;
-				break;
-			case 'after_content':
-				$content .= $inject_content;
-				break;
-			case 'specific_tag':
-			case 'before_specific_tag':
-				$tag_rules = get_post_meta( $injection->ID, 'injection_tag', true );
-				$content   = usci_inject_tag_ruleset( $content, $inject_content, $tag_rules, $content_position );
-				break;
-		}
-
-        // check for formatting
-        $formatting = get_post_meta( $injection->ID, 'injection_formatting', true );
         if ( $formatting === 'on' ) {
             remove_filter( 'the_content', 'usci_maybe_inject_the_content' );
-			$content = wpautop( $content );
-            $content = apply_filters( 'the_content', $content );
+            $inject_content = wpautop( $inject_content );
+            $inject_content = apply_filters( 'the_content', $inject_content );
             add_filter( 'the_content', 'usci_maybe_inject_the_content' );
         }
-	}
 
-	return $content;
+        if ( $content_position === 'before_content' ) {
+            $content = $inject_content . $content;
+        } elseif ( $content_position === 'after_content' ) {
+            $content .= $inject_content;
+        } else {
+            $content = usci_dom_inject( $content, $inject_content, $tag_rules, $content_position, $exclude_rules );
+        }
+    }
+
+    return $content;
 }
 
 /**
- * Tries to inject content after the first matching rule in the ruleset.
+ * Injects content before or after a specific HTML tag using DOM and XPath.
+ * Skips tags inside excluded containers defined by ID or class.
  *
- * @param string $html              The original HTML content.
- * @param string $injection         The content to inject.
- * @param string $ruleset           Comma-separated tag rules.
- * @param string $content_position  Determines if the content is injected before or after the tag.
+ * @param string $html      The original HTML content.
+ * @param string $injection The HTML content to inject.
+ * @param string $ruleset   Comma-separated tag rules (e.g., 'h2:nth-of-type(2), h3').
+ * @param string $mode      'specific_tag' or 'before_specific_tag'.
+ * @param string $excludes  Comma-separated selectors to exclude (e.g., '#comments, .no-inject').
  *
- * @return string Modified HTML with injection or original if no match.
+ * @return string The HTML content with injection applied, or original HTML.
  */
-function usci_inject_tag_ruleset( string $html, string $injection, string $ruleset, string $content_position ): string {
-	if ( empty( $ruleset ) ) {
-		return $html;
-	}
+function usci_dom_inject( string $html, string $injection, string $ruleset, string $mode, string $excludes = '' ): string {
 
-	$rules = array_map( 'trim', explode( ',', $ruleset ) );
+    if ( empty( $ruleset ) ) return $html;
 
-	foreach ( $rules as $rule ) {
-		$updated = usci_try_inject_after_css_selector( $html, $injection, $rule, $content_position );
-		if ( $updated !== $html ) {
-			return $updated;
-		}
-	}
+    $rules   = array_map( 'trim', explode( ',', $ruleset ) );
+    $exclude = array_map( 'trim', explode( ',', $excludes ) );
 
-	return $html;
-}
-
-/**
- * Injects content before or after the specified tag rule.
- *
- * @param string $html
- * @param string $injection
- * @param string $rule             E.g., h2:nth-of-type(2)
- * @param string $position_mode    'specific_tag' or 'before_specific_tag'
- *
- * @return string
- */
-function usci_try_inject_after_css_selector( string $html, string $injection, string $rule, string $position_mode ): string {
-	if ( ! preg_match( '#^([a-z0-9]+)(?::nth-of-type\((\d+)\))?$#i', $rule, $matches ) ) {
-		return $html;
-	}
-
-	$tag      = $matches[1];
-	$position = isset( $matches[2] ) ? (int) $matches[2] : 1;
-
-	$tag = preg_quote( $tag, '#' );
-
-	$pattern = sprintf(
-		'#(<%1$s(?:\s[^>]*)?>.*?</%1$s>)|(<%1$s(?:\s[^>]*)?/?>)#is',
-		$tag
+	$html = preg_replace(
+		'/(?<=\s|\A)(\[.*?\])(?=\s|\z)/',
+		'<span data-shortcode="true">$1</span>',
+		$html
 	);
+	$wrapped_html = '<div id="usci-wrapper">' . $html . '</div>';
 
-	$count = 0;
+    libxml_use_internal_errors( true );
+    $dom = new DOMDocument();
+	$loaded = $dom->loadHTML( $wrapped_html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+    if ( ! $loaded ) {
+        error_log( '[USCI] Failed to load HTML content.' );
+        return $html;
+    }
 
-	return preg_replace_callback( $pattern, function ( $match ) use ( $injection, $position, $position_mode, &$count ) {
-		$count++;
-		if ( $count === $position ) {
-			if ( $position_mode === 'before_specific_tag' ) {
-				return $injection . $match[0];
+    error_log( '[USCI] DOM loaded successfully.' );
+    $xpath = new DOMXPath( $dom );
+
+    foreach ( $rules as $rule ) {
+        error_log( '[USCI] Processing rule: ' . $rule );
+
+        $selector = trim( $rule );
+        $position = 1;
+
+        if ( preg_match( '#:nth-of-type\((\d+)\)$#i', $selector, $m ) ) {
+            $position = (int) $m[1];
+            $selector = preg_replace( '#:nth-of-type\(\d+\)$#i', '', $selector );
+        }
+
+        $selector_xpath = usci_selector_to_xpath( $selector );
+        $nodes = $xpath->query( $selector_xpath );
+        error_log( '[USCI] Found ' . $nodes->length . ' nodes for selector.' );
+
+        $count = 0;
+        foreach ( $nodes as $node ) {
+            $skip = false;
+            foreach ( $exclude as $sel ) {
+                if ( empty( $sel ) ) continue;
+                $check = null;
+                if ( str_starts_with( $sel, '#' ) ) {
+                    $id = substr( $sel, 1 );
+                    $check = "ancestor::*[@id='$id']";
+                } elseif ( str_starts_with( $sel, '.' ) ) {
+                    $cls = substr( $sel, 1 );
+                    $check = "ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' $cls ')]";
+                }
+                if ( $check ) {
+                    $result = $xpath->evaluate( "boolean($check)", $node );
+                    error_log( '[USCI] Checking exclusion "' . $sel . '": ' . ( $result ? 'MATCHED' : 'not matched' ) );
+                    if ( $result ) {
+                        $skip = true;
+                        break;
+                    }
+                }
+            }
+            if ( $skip ) {
+                error_log( '[USCI] Skipped node due to exclusion rule.' );
+                continue;
+            }
+
+            $count++;
+            if ( $count !== $position ) continue;
+
+            error_log( '[USCI] Will inject after node: ' . $node->nodeName );
+
+            $frag = $dom->createDocumentFragment();
+			$wrapped = '<div>' . $injection . '</div>';
+			$frag->appendXML( $wrapped );
+
+            if ( $mode === 'before_specific_tag' ) {
+                $node->parentNode->insertBefore( $frag, $node );
+            } else {
+				if ( $node->nextSibling ) {
+                    $node->parentNode->insertBefore( $frag, $node->nextSibling );
+                } else {
+                    $node->parentNode->appendChild( $frag );
+                }
+            }
+
+            $wrapper = $dom->getElementById( 'usci-wrapper' );
+			if ( $wrapper ) {
+				$output = '';
+				foreach ( $wrapper->childNodes as $child ) {
+					$output .= $dom->saveHTML( $child );
+				}
+				$output = preg_replace_callback(
+					'#<span[^>]*data-shortcode="true"[^>]*>(.*?)</span>#s',
+					function ( $matches ) {
+						return $matches[1];
+					},
+					$output
+				);
+				return $output;
 			}
-			return $match[0] . $injection;
-		}
-		return $match[0];
-	}, $html );
+        }
+    }
+
+    return $html;
+}
+
+/**
+ * Converts a simplified CSS selector to an XPath expression.
+ * Supports: tag, .class, #id, tag.class, tag#id.
+ * 
+ * @param	string $selector
+ * 
+ * @return string 
+ */
+function usci_selector_to_xpath( string $selector ): string {
+    $tag = '*';
+    $predicates = [];
+
+    if ( preg_match( '#^([a-z0-9]+)#i', $selector, $m ) ) {
+        $tag = $m[1];
+    }
+    if ( preg_match( '#\.([a-zA-Z0-9_-]+)#', $selector, $m ) ) {
+        $cls = $m[1];
+        $predicates[] = "contains(concat(' ', normalize-space(@class), ' '), ' $cls ')";
+    }
+    if ( preg_match( '#\#([a-zA-Z0-9_-]+)#', $selector, $m ) ) {
+        $id = $m[1];
+        $predicates[] = "@id='$id'";
+    }
+
+    $predicate = '';
+    if ( $predicates ) {
+        $predicate = '[' . implode( ' and ', $predicates ) . ']';
+    }
+
+    return '//' . $tag . $predicate;
 }

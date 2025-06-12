@@ -9,7 +9,7 @@
  *
  * Plugin Name:  Quality Media Network - Injector
  * Description:  Ermöglicht das Einfügen individueller Elemente an beliebigen Positionen im Seitenlayout.
- * Version:      0.0.4
+ * Version:      0.0.5
  * Author:       Quality Media Network GmbH
  * Author URI:   https://www.qualitymedianetwork.de
  * Text Domain:  usc-injector
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     return;
 }
 
-define( 'USCI_PLUGIN_VERSION', '0.0.4' );
+define( 'USCI_PLUGIN_VERSION', '0.0.5' );
 define( 'USCI_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'USCI_PLUGIN_BASEURL', plugin_dir_url( __FILE__ ) );
 define( 'USCI_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

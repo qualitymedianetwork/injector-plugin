@@ -115,6 +115,13 @@ function usci_render_metabox_content( WP_Post $post ): void {
                         <p><span class="description"><?php echo sprintf( esc_html__( 'Set the HTML tag on which the injection should be exectuted. You can use hierarchical rules like %s. This example ruleset would inject the content after the 2nd h2-tag. If it couldnot find the tag, the content would be inserted after the 3rd h3 tag. If that didnot work, the content will be inserted after the first h3 tag.', 'usc-injector' ), '<code>h2:nth-of-type(2), h3:nth-of-type(3), h3</code>' ); ?></span></p>
                     </td>
                 </tr>
+                <tr id="row-injection-exclude">
+                    <th scope="row"><?php esc_html_e( 'Exclude Containers:', 'usc-injector' ); ?></th>
+                    <td>
+                        <input type="text" class="large-text" name="injection_exclude" value="<?php echo esc_attr( get_post_meta( $post->ID, 'injection_exclude', true ) ); ?>" />
+                        <p><span class="description"><?php esc_html_e( 'Comma-separated list of container selectors (e.g., #comments, .no-inject) to exclude from injection.', 'usc-injector' ); ?></span></p>
+                    </td>
+                </tr>
             </table>
         </div>
 
@@ -155,4 +162,5 @@ function usci_save_injection_metabox( int $post_id ): void {
     update_post_meta( $post_id, 'injection_content_position', $_POST['injection_content_position'] );
     update_post_meta( $post_id, 'injection_tag', $_POST['injection_tag'] );
     update_post_meta( $post_id, 'injection_formatting', $_POST['injection_formatting'] );
+    update_post_meta( $post_id, 'injection_exclude', $_POST['injection_exclude'] );
 }
