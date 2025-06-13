@@ -134,7 +134,7 @@ function usci_dom_inject( string $html, string $injection, string $ruleset, stri
 
     libxml_use_internal_errors( true );
     $dom = new DOMDocument();
-	$loaded = $dom->loadHTML( $wrapped_html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+	$loaded = $dom->loadHTML( '<?xml encoding="UTF-8">' . $wrapped_html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
     if ( ! $loaded ) {
         error_log( '[USCI] Failed to load HTML content.' );
         return $html;
