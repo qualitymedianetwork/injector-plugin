@@ -88,10 +88,10 @@ function usci_maybe_inject_the_content( string $content ): string {
         $exclude_rules    = get_post_meta( $injection->ID, 'injection_exclude', true );
 
         if ( $formatting === 'on' ) {
-            remove_filter( 'the_content', 'usci_maybe_inject_the_content' );
+            remove_filter( 'the_content', 'usci_maybe_inject_the_content', 2 );
             $inject_content = wpautop( $inject_content );
             $inject_content = apply_filters( 'the_content', $inject_content );
-            add_filter( 'the_content', 'usci_maybe_inject_the_content' );
+            add_filter( 'the_content', 'usci_maybe_inject_the_content', 2 );
         }
 
         if ( $content_position === 'before_content' ) {

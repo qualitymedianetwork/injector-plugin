@@ -47,7 +47,7 @@ function usci_init(): void {
         require_once __DIR__ . '/src/frontend/injection.php';
         add_action( 'wp_head', 'usci_maybe_inject_head_footer_content' );
         add_action( 'wp_footer', 'usci_maybe_inject_head_footer_content' );
-        add_filter( 'the_content', 'usci_maybe_inject_the_content', PHP_INT_MAX );
+        add_filter( 'the_content', 'usci_maybe_inject_the_content', 2 );
     }
 
     // stuff only needed in admin.
