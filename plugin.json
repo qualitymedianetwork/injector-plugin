@@ -1,0 +1,22 @@
+{
+	"name": "USC Injector",
+	"version": "0.0.7",
+	"download_url": "https://git.upsidecode.dev/usc/wp-plugin-injector/archive/latest.zip",
+	"homepage": "https://git.upsidecode.dev/usc/wp-plugin-injector",
+	"requires": "6.8.1",
+	"tested": "6.8.1",
+	"last_updated": "2025-09-02 12:00:00",
+	"upgrade_notice": "",
+	"author": "Laura Herzog for Upsidecode GmbH",
+	"author_homepage": "https://git.upsidecode.dev/usc/wp-plugin-injector",
+	"sections": {
+		"description": "Allows you to insert individual elements at any position in the page layout."
+	},
+	"icons" : {},
+	"banners": {},
+	"translations": [],
+	"rating": 0,
+	"num_ratings": 0,
+	"downloaded": 0,
+	"active_installs": 0
+}

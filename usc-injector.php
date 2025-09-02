@@ -8,7 +8,7 @@
  * @license      GPL v3 or later
  *
  * Plugin Name:  Quality Media Network - Injector
- * Description:  Ermöglicht das Einfügen individueller Elemente an beliebigen Positionen im Seitenlayout.
+ * Description:  Allows you to insert individual elements at any position in the page layout.
  * Version:      0.0.6
  * Author:       Quality Media Network GmbH
  * Author URI:   https://www.qualitymedianetwork.de
