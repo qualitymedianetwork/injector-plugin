@@ -1,8 +1,8 @@
 {
 	"name": "USC Injector",
 	"slug" : "usc-injector",
-	"version": "0.0.7",
-	"download_url": "https://git.upsidecode.dev/usc/wp-plugin-injector/archive/0.0.7.zip",
+	"version": "0.0.8",
+	"download_url": "https://git.upsidecode.dev/usc/wp-plugin-injector/archive/0.0.8.zip",
 	"homepage": "https://git.upsidecode.dev/usc/wp-plugin-injector",
 	"requires": "6.8.1",
 	"tested": "6.8.1",
