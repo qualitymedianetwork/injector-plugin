@@ -15,11 +15,6 @@ add_filter( 'site_transient_update_plugins', 'usci_plugin_updater' );
 
 function usci_plugin_updater_info( $res, $action, $args ) {
 
-	print_r($res);
-	print_r($action);
-	print_r($args);
-	exit;
-
 	// do nothing if you're not getting plugin information right now
 	if( 'plugin_information' !== $action ) {
 		return $res;
