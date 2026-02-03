@@ -33,7 +33,8 @@ jobs:
       - name: Create ZIP file
         run: |
           mkdir wp-plugin-injector
-          cp -r ./src/* wp-plugin-injector/
+          cp -r ./* wp-plugin-injector/
+          rm -rf wp-plugin-injector/.github
           zip -r "wp-plugin-injector-${{ env.VERSION }}.zip" wp-plugin-injector/
           rm -rf wp-plugin-injector/
         working-directory: ${{ github.workspace }}
