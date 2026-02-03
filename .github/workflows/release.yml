@@ -19,7 +19,7 @@ jobs:
       - name: Extract version from plugin PHP file
         id: version
         run: |
-          VERSION=$(grep -oP '(?<=Version:\s)[0-9]+\.[0-9]+\.[0-9]+' usc-injector.php)
+          VERSION=$(grep -oP 'Version:\s+\K[0-9]+\.[0-9]+\.[0-9]+' usc-injector.php)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Found version: $VERSION"
 
