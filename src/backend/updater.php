@@ -91,7 +91,7 @@ function usci_plugin_updater( $transient ) {
 function usci_plugin_updater_request() {
 
 	$remote = wp_remote_get( 
-		'https://git.upsidecode.dev/usc/wp-plugin-injector/raw/branch/main/plugin.json',
+		'https://raw.githubusercontent.com/qualitymedianetwork/injector-plugin/refs/heads/main/plugin.json',
 		array(
 			'timeout' => 10,
 			'headers' => array(
