@@ -1,0 +1,60 @@
+name: Create Release and Upload ZIP
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Extract the version from the PHP file
+      - name: Extract version from plugin PHP file
+        id: version
+        run: |
+          VERSION=$(grep -oP '(?<=Version:\s)[0-9]+\.[0-9]+\.[0-9]+' usc-injector.php)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Found version: $VERSION"
+
+      # Create a Git tag based on the version extracted from the PHP file
+      - name: Create Git tag
+        run: |
+          git tag "v$VERSION"  # Create a new Git tag with the version
+          git push origin "v$VERSION"  # Push the tag to GitHub
+
+      # Create the ZIP file of the plugin
+      - name: Create ZIP file
+        run: |
+          mkdir wp-plugin-injector
+          cp -r ./src/* wp-plugin-injector/
+          zip -r "wp-plugin-injector-${{ env.VERSION }}.zip" wp-plugin-injector/
+          rm -rf wp-plugin-injector/
+        working-directory: ${{ github.workspace }}
+
+      # Create a release on GitHub and upload the ZIP file
+      - name: Create GitHub release and upload ZIP
+        uses: actions/create-release@v1
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          release_name: "Release ${{ env.VERSION }}"
+          body: "Release notes for version ${{ env.VERSION }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload the ZIP file as a release asset
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "wp-plugin-injector-${{ env.VERSION }}.zip"
+          tag_name: "v${{ env.VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
