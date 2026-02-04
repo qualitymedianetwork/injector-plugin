@@ -1,24 +1,24 @@
 {
-	"name": "USC Injector",
-	"slug" : "usc-injector",
-	"version": "0.0.10",
-	"download_url": "https://github.com/qualitymedianetwork/injector-plugin/releases/download/v0.0.10/wp-plugin-injector-0.0.10.zip",
-	"homepage": "https://git.upsidecode.dev/usc/wp-plugin-injector",
-	"requires": "6.8.1",
-	"tested": "6.8.1",
-	"requires_php" : "8.3",
-	"last_updated": "2025-09-02 12:00:00",
-	"upgrade_notice": "",
-	"author": "Laura Herzog for Upsidecode GmbH",
-	"author_homepage": "https://git.upsidecode.dev/usc/wp-plugin-injector",
-	"sections": {
-		"description": "Allows you to insert individual elements at any position in the page layout."
-	},
-	"icons" : {},
-	"banners": {},
-	"translations": [],
-	"rating": 0,
-	"num_ratings": 0,
-	"downloaded": 0,
-	"active_installs": 0
+  "name": "USC Injector",
+  "slug": "usc-injector",
+  "version": "0.0.11",
+  "download_url": "https://github.com/qualitymedianetwork/injector-plugin/releases/download/v0.0.11/wp-plugin-injector-0.0.11.zip",
+  "homepage": "https://git.upsidecode.dev/usc/wp-plugin-injector",
+  "requires": "6.8.1",
+  "tested": "6.8.1",
+  "requires_php": "8.3",
+  "last_updated": "2025-09-02 12:00:00",
+  "upgrade_notice": "",
+  "author": "Laura Herzog for Upsidecode GmbH",
+  "author_homepage": "https://git.upsidecode.dev/usc/wp-plugin-injector",
+  "sections": {
+    "description": "Allows you to insert individual elements at any position in the page layout."
+  },
+  "icons": {},
+  "banners": {},
+  "translations": [],
+  "rating": 0,
+  "num_ratings": 0,
+  "downloaded": 0,
+  "active_installs": 0
 }
